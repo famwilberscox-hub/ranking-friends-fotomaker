@@ -22,7 +22,7 @@ app.post('/api/cartoonize', upload.single('photo'), async (req, res) => {
 ),
       prompt,
       size: 'auto',
-      quality: 'high',
+      quality: 'medium',
       output_format: 'png'
     });
     const b64 = result.data?.[0]?.b64_json;
