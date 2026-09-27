@@ -11,7 +11,52 @@ app.post('/api/cartoonize', upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Geen foto ontvangen.' });
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const prompt = `Transformeer deze foto naar de vaste Ranking the Friends-look: een rijke, kleurrijke, cinematic 3D-cartoon/CGI illustratie met warme oranje-roze-paars-blauwe partybelichting, zachte glossy huid- en materiaalrendering, expressieve maar herkenbare gezichten, levendige ogen, subtiele filmische depth of field en een premium animatiefilm/poster-uitstraling. Behoud exact het aantal personen, hun identiteit, kapsels, huidskleur, kleding, pose, onderlinge positie, gezichtsuitdrukking, accessoires en de belangrijkste elementen van de originele locatie. Maak niemand jonger of ouder. Voeg geen extra personen, tekst, logo's of objecten toe. De foto moet duidelijk dezelfde gebeurtenis blijven, alleen volledig gerenderd in de Ranking the Friends cartoonstijl. Houd de compositie en uitsnede zo dicht mogelijk bij het origineel.`;
+    const prompt = `Transform this exact photograph into the established
+"Ranking the Friends" visual house style.
+
+STYLE:
+Create a polished, charming, high-end 3D animated feature-film character
+illustration. The people must look clearly CARTOONED and STYLIZED, not
+photorealistic.
+
+Use the same visual language as the Ranking the Friends characters:
+- large, warm, highly expressive animated eyes
+- softly exaggerated but attractive facial proportions
+- rounded and friendly facial geometry
+- smooth stylized skin with subtle soft shading
+- simplified but recognizable noses, mouths, eyebrows and jawlines
+- beautifully rendered stylized hair and facial hair
+- expressive, cheerful animated-character appearance
+- premium glossy 3D CGI rendering
+- warm cinematic orange, pink, purple and blue lighting
+- soft highlights and atmospheric glow
+- rich saturated colors
+- subtle cinematic depth of field
+- polished animated movie poster quality
+
+IDENTITY IS ESSENTIAL:
+Every person must remain immediately recognizable as the same individual
+from the source photograph. Preserve their distinctive face shape,
+hairstyle, hair color, facial hair, skin tone, clothing, accessories and
+expression while translating them into the Ranking the Friends character
+design.
+
+COMPOSITION:
+Preserve exactly the number of people, their poses, positions, clothing,
+interaction, camera angle, crop and the important elements of the original
+location. The result must clearly depict the same photograph and same
+moment.
+
+Do not add or remove people.
+Do not add text, logos or unrelated objects.
+Do not make people younger or older.
+Do not turn the result into a realistic digital painting.
+Do not retain photographic skin texture.
+Do not produce anime, comic-book, flat illustration or caricature styling.
+
+The final result should look like these real friends were cast as characters
+in the same premium 3D animated universe used throughout the
+Ranking the Friends visual identity.`;
 
     const result = await client.images.edit({
       model: 'gpt-image-2',
