@@ -2,6 +2,11 @@ import express from 'express';
 import multer from 'multer';
 import OpenAI from 'openai';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -142,11 +147,13 @@ characters in IMAGE 2.
     );
 
     // IMAGE 2: vaste Ranking the Friends huisstijlreferentie
-    const styleReference = await OpenAI.toFile(
-      fs.createReadStream('ranking-friends-style.png'),
-      'ranking-friends-style.png',
-      { type: 'image/png' }
-    );
+   const styleReference = await OpenAI.toFile(
+  fs.createReadStream(
+    path.join(__dirname, 'ranking-friends-style.png')
+  ),
+  'ranking-friends-style.png',
+  { type: 'image/png' }
+);
 
     const result = await client.images.edit({
       model: 'gpt-image-2',
