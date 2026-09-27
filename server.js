@@ -5,7 +5,7 @@ import fs from 'fs';
 
 const app = express();
 const upload = multer({ dest: 'uploads/', limits: { fileSize: 15 * 1024 * 1024 } });
-app.use(express.static('public'));
+app.use(express.static('.'));
 
 app.post('/api/cartoonize', upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Geen foto ontvangen.' });
