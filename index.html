@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#24102f" />
+  <title>Ranking the Friends – Foto Maker</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Aptos,Arial,sans-serif;color:#fff;min-height:100vh;
+    background:radial-gradient(circle at 20% 0%,#ff8a45 0,transparent 30%),radial-gradient(circle at 90% 20%,#9c45bd 0,transparent 35%),linear-gradient(145deg,#35133f,#171225 65%,#30141d)}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,190,80,.08),transparent 30%,rgba(0,0,0,.22))}
+    .wrap{width:min(920px,100%);margin:auto;padding:28px 18px 50px}
+    .hero{text-align:center;padding:20px 12px 18px}
+    .eyebrow{font-weight:800;letter-spacing:.18em;color:#ffd56a;font-size:.78rem}
+    h1{font-size:clamp(2.1rem,8vw,4.6rem);line-height:.9;margin:10px 0 12px;font-weight:950;text-transform:uppercase;text-shadow:0 4px 22px rgba(0,0,0,.45)}
+    .sub{max-width:620px;margin:0 auto;color:#f6e8f4;font-size:1.05rem}
+    .card{background:rgba(20,10,28,.78);border:1px solid rgba(255,214,104,.45);box-shadow:0 18px 60px rgba(0,0,0,.35);border-radius:24px;padding:18px;backdrop-filter:blur(10px)}
+    .drop{display:block;border:2px dashed rgba(255,213,106,.62);border-radius:18px;padding:28px 16px;text-align:center;cursor:pointer;background:rgba(255,255,255,.035)}
+    .drop strong{display:block;font-size:1.2rem;margin-bottom:7px}.drop span{color:#d9c8df}
+    input[type=file]{display:none}
+    .preview{display:none;margin-top:16px}.preview img,.result img{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:18px;background:#100b15}
+    .actions{display:grid;gap:10px;margin-top:14px}
+    button,.download{appearance:none;border:0;border-radius:14px;padding:15px 18px;font-weight:900;font-size:1rem;cursor:pointer;text-align:center;text-decoration:none}
+    .primary{background:linear-gradient(90deg,#ffbf3f,#ff704b);color:#2b1421;box-shadow:0 8px 28px rgba(255,128,55,.28)}
+    .secondary,.download{background:rgba(255,255,255,.10);color:white;border:1px solid rgba(255,255,255,.18)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .status{display:none;margin-top:14px;padding:13px 15px;border-radius:14px;background:rgba(255,255,255,.08);line-height:1.4}
+    .status.error{background:rgba(160,20,40,.28);border:1px solid rgba(255,110,130,.35)}
+    .result{display:none;margin-top:20px}.result h2{margin:0 0 12px;color:#ffd56a}
+    .spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;display:inline-block;vertical-align:-4px;margin-right:8px;animation:s .8s linear infinite}
+    @keyframes s{to{transform:rotate(360deg)}}
+    .foot{text-align:center;color:#bcaec4;font-size:.8rem;margin-top:16px}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">VRIENDENWEEKEND 2026</div>
+    <h1>Ranking<br>the Friends</h1>
+    <p class="sub">Maak een foto of kies er één van je telefoon. Wij maken er jullie warme, kleurrijke 3D-cartoonversie van.</p>
+  </section>
+
+  <section class="card">
+    <label class="drop" for="photo">
+      <strong>📸 Maak of kies een foto</strong>
+      <span>JPG, PNG of WEBP · maximaal 15 MB</span>
+    </label>
+    <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+
+    <div id="preview" class="preview">
+      <img id="previewImg" alt="Voorbeeld van gekozen foto">
+      <div class="actions">
+        <button id="go" class="primary">✨ Maak mijn cartoon</button>
+        <button id="chooseAgain" class="secondary">Andere foto kiezen</button>
+      </div>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="result" class="result">
+      <h2>Jullie cartoon is klaar 🎉</h2>
+      <img id="resultImg" alt="Ranking the Friends cartoon">
+      <div class="actions">
+        <a id="download" class="download" download="ranking-the-friends.png">Bewaar afbeelding</a>
+        <button id="again" class="primary">Nog een foto</button>
+      </div>
+    </div>
+  </section>
+  <div class="foot">Ranking the Friends · Foto Maker</div>
+</main>
+<script>
+const input = document.getElementById('photo');
+const preview = document.getElementById('preview');
+const previewImg = document.getElementById('previewImg');
+const go = document.getElementById('go');
+const statusBox = document.getElementById('status');
+const result = document.getElementById('result');
+const resultImg = document.getElementById('resultImg');
+const download = document.getElementById('download');
+
+function showStatus(html, error=false){
+  statusBox.innerHTML = html; statusBox.style.display='block';
+  statusBox.className = 'status' + (error ? ' error' : '');
+}
+function reset(){
+  input.value=''; preview.style.display='none'; result.style.display='none'; statusBox.style.display='none';
+  previewImg.removeAttribute('src'); resultImg.removeAttribute('src'); go.disabled=false;
+}
+input.addEventListener('change', () => {
+  const f=input.files[0]; if(!f) return;
+  if(f.size > 15*1024*1024){ showStatus('Deze foto is groter dan 15 MB. Kies een kleinere foto.', true); return; }
+  previewImg.src=URL.createObjectURL(f); preview.style.display='block'; result.style.display='none'; statusBox.style.display='none';
+});
+document.getElementById('chooseAgain').onclick=()=>input.click();
+document.getElementById('again').onclick=reset;
+
+go.onclick = async () => {
+  const f=input.files[0]; if(!f) return;
+  go.disabled=true; result.style.display='none';
+  showStatus('<span class="spinner"></span>Even geduld… jullie foto wordt omgetoverd. Dit kan een minuut of langer duren.');
+  const fd=new FormData(); fd.append('photo',f);
+  try{
+    const r=await fetch('/api/cartoonize',{method:'POST',body:fd});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error || `Serverfout (${r.status})`);
+    if(!data.image) throw new Error('De server stuurde geen afbeelding terug.');
+    resultImg.src=data.image; download.href=data.image; result.style.display='block';
+    showStatus('Klaar! ✨');
+    result.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    showStatus('Het maken van de cartoon lukte niet: '+e.message, true);
+  }finally{go.disabled=false}
+};
+</script>
+</body>
+</html>
