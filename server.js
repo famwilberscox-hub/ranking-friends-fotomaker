@@ -15,7 +15,11 @@ app.post('/api/cartoonize', upload.single('photo'), async (req, res) => {
 
     const result = await client.images.edit({
       model: 'gpt-image-2',
-      image: fs.createReadStream(req.file.path),
+      image: await OpenAI.toFile(
+  fs.createReadStream(req.file.path),
+  req.file.originalname,
+  { type: req.file.mimetype }
+),
       prompt,
       size: 'auto',
       quality: 'high',
